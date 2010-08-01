@@ -18,7 +18,9 @@ object Complex {
   }
 }
 
-abstract class Complex (val a: Double, val b: Double, val r: Double, val phi: Double) {
+abstract class Complex(
+  val a: Double, val b: Double, val r: Double, val phi: Double
+) {
   def +(other: Complex): Complex
   def -(other: Complex): Complex
   def *(other: Complex): Complex
@@ -96,7 +98,6 @@ trait ComplexPolar extends Complex  {
   }
 
   override def pow(other: Double): Complex = {
-    // FIXME
     Complex.fromPolar(math.pow(r, other), phi * other)
   }
   
