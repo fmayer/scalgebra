@@ -7,7 +7,7 @@ package scalgebra
 object Complex {
   def fromPolar(r: Double, phi: Double): Complex = {
     new Complex(
-      r * math.cos(phi), r * math.sin(phi), r, phi
+      r * math.cos(phi), r * math.sin(phi), r, phi % math.Pi
     ) with ComplexBinomial with AbstractComplexPolar
   }
   
@@ -75,12 +75,18 @@ trait AbstractComplexBinomial extends ComplexBinomial {
       case n => super.pow(other);
     }
   }
+
+  abstract override def rt(other: Double) = {
+    other match {
+      case 2.0 => Complex.fromBinomial(a * a - b * b, a * b + b * a);
+      case n => super.rt(n);
+    }
+  }
 }
 
 
 trait ComplexPolar extends Complex  {
-  override def toString =
-    "(%f; %f)".format(r, phi)
+  override def toString = "(%f; %f rad)".format(r, phi)
   
   override def *(other: Complex) = {
     Complex.fromBinomial(
@@ -102,7 +108,7 @@ trait ComplexPolar extends Complex  {
   }
   
   override def rt(other: Double): Complex = {
-    Complex.fromBinomial(1, 1)
+    Complex.fromPolar(math.sqrt(r), phi)
   }
 }
 

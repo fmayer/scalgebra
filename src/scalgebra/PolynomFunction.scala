@@ -18,8 +18,7 @@ class PolynomFunction(var fun: Seq[(Double, Double)]) {
   def order =
     fun(0)._2
   
-  override
-  def toString = {
+  override def toString = {
     if (!isEmpty) {
       fun.map(x => "%fx^%f".format(x._1, x._2)).reduceLeft(_ + " + " + _)
     }
