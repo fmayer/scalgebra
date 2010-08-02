@@ -26,7 +26,7 @@ abstract class Complex(
   def *(other: Complex): Complex
   def /(other: Complex): Complex
   def pow(other: Double): Complex
-  def rt(other: Double): Complex
+  def root(other: Int): IndexedSeq[Complex]
 }
 
 // Why are we doing this? Consider the case of two complex numbers being
@@ -107,8 +107,13 @@ trait ComplexPolar extends Complex  {
     Complex.fromPolar(math.pow(r, other), phi * other)
   }
   
-  override def rt(other: Double): Complex = {
-    Complex.fromPolar(math.pow(r, 1 / other), phi / other)
+  override def root(other: Int): IndexedSeq[Complex] = {
+    val nr = math.pow(r, 1 / other)
+    val nphi = phi / other;
+    for (n <- 0 until other.intValue)
+      yield Complex.fromPolar(
+        math.pow(r, 1 / other), (phi / other) + n * 360 / other
+      )
   }
 }
 
