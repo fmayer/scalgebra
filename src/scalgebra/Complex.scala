@@ -108,7 +108,7 @@ trait ComplexPolar extends Complex  {
   }
   
   override def rt(other: Double): Complex = {
-    Complex.fromPolar(math.sqrt(r), phi)
+    Complex.fromPolar(math.sqrt(r), phi / other)
   }
 }
 
