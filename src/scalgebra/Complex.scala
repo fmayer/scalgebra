@@ -86,20 +86,12 @@ trait ComplexPolar extends Complex  {
   override def *(other: Double) = Complex.fromPolar(other * r, phi)
   
   override def *(other: Complex) =
-    Complex.fromBinomial(
-      a * other.a - b * other.b,
-      a * other.b + b * other.a
-    )
+    Complex.fromPolar(r * other.r, phi + other.phi)
   
   override def /(other: Double) = Complex.fromPolar(r / other, phi)
 
-  override def /(other: Complex) = {
-    val divisor = math.pow(other.a, 2) + math.pow(other.b, 2)
-    Complex.fromBinomial(
-      (a * other.a + b * other.b) / divisor,
-      (b * other.a - a * other.b) / divisor
-    )
-  }
+  override def /(other: Complex) =
+    Complex.fromPolar(r / other.r, phi - other.phi)
 
   override def pow(other: Double): Complex =
     Complex.fromPolar(math.pow(r, other), phi * other)
@@ -107,7 +99,7 @@ trait ComplexPolar extends Complex  {
   override def root(other: Int): IndexedSeq[Complex] = {
     val nr = math.pow(r, 1 / other)
     val nphi = phi / other;
-    for (n <- 0 until other.intValue)
+    for (n <- 0 until other)
       yield Complex.fromPolar(
         math.pow(r, 1 / other), (phi / other) + n * 360 / other
       )
