@@ -100,9 +100,7 @@ trait ComplexPolar extends Complex  {
     val nr = math.pow(r, 1 / other)
     val nphi = phi / other;
     for (n <- 0 until other)
-      yield Complex.fromPolar(
-        math.pow(r, 1 / other), (phi / other) + n * 360 / other
-      )
+      yield Complex.fromPolar(nr, nphi + n * 360 / other)
   }
 }
 
