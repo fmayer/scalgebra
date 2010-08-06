@@ -24,9 +24,12 @@ abstract class Complex(
   def +(other: Complex): Complex
   def -(other: Complex): Complex
   def *(other: Complex): Complex
+  def *(other: Double): Complex
   def /(other: Complex): Complex
+  def /(other: Double): Complex
   def pow(other: Double): Complex
   def root(other: Int): IndexedSeq[Complex]
+  implicit def doubleToComplex(other: Double) = Complex.fromBinomial(other, 0)
 }
 
 // Why are we doing this? Consider the case of two complex numbers being
@@ -36,20 +39,23 @@ abstract class Complex(
 trait ComplexBinomial extends Complex {
   override def toString = "%f + %fi".format(a, b)
 
-  override def +(other: Complex): Complex = {
+  override def +(other: Complex): Complex =
     Complex.fromBinomial(a + other.a, b + other.b)
-  }
 
-  override def -(other: Complex): Complex = {
+  override def -(other: Complex): Complex =
     Complex.fromBinomial(a - other.a, b - other.b)
-  }
 
-  override def *(other: Complex) = {
+  override def *(other: Double) =
+    Complex.fromBinomial(other * a, other * b)
+
+  override def *(other: Complex) =
     Complex.fromBinomial(
       a * other.a - b * other.b,
       a * other.b + b * other.a
     )
-  }
+
+  override def /(other: Double) =
+    Complex.fromBinomial(a / other, b / other)
 
   override def /(other: Complex) = {
     val divisor = math.pow(other.a, 2) + math.pow(other.b, 2)
@@ -57,10 +63,6 @@ trait ComplexBinomial extends Complex {
       (a * other.a + b * other.b) / divisor,
       (b * other.a - a * other.b) / divisor
     )
-  }
-
-  override def rt(other: Double): Complex = {
-    Complex.fromBinomial(1, 1)
   }
 }
 
@@ -75,25 +77,21 @@ trait AbstractComplexBinomial extends ComplexBinomial {
       case n => super.pow(other);
     }
   }
-
-  abstract override def rt(other: Double) = {
-    other match {
-      case 2.0 => Complex.fromBinomial(a * a - b * b, a * b + b * a);
-      case n => super.rt(n);
-    }
-  }
 }
 
 
 trait ComplexPolar extends Complex  {
   override def toString = "(%f; %f rad)".format(r, phi)
+
+  override def *(other: Double) = Complex.fromPolar(other * r, phi)
   
-  override def *(other: Complex) = {
+  override def *(other: Complex) =
     Complex.fromBinomial(
       a * other.a - b * other.b,
       a * other.b + b * other.a
     )
-  }
+  
+  override def /(other: Double) = Complex.fromPolar(r / other, phi)
 
   override def /(other: Complex) = {
     val divisor = math.pow(other.a, 2) + math.pow(other.b, 2)
@@ -103,9 +101,8 @@ trait ComplexPolar extends Complex  {
     )
   }
 
-  override def pow(other: Double): Complex = {
+  override def pow(other: Double): Complex =
     Complex.fromPolar(math.pow(r, other), phi * other)
-  }
   
   override def root(other: Int): IndexedSeq[Complex] = {
     val nr = math.pow(r, 1 / other)
