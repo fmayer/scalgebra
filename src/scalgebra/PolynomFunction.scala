@@ -97,13 +97,13 @@ class PolynomFunction(var fun: Seq[(Double, Double)]) {
 
   def newton(start: Double, epsilon: Double) {
     val d = derivative;
-    var h = start + 1;
+    var h = 0.;
     var x = start;
     var a: Double = 0.;
-    while (abs(x - h) < epsilon) {
+    do {
       h = x;
-      x = (x-value(x)) / d.value(h);
-    }
+      x = x - value(x) / d.value(x);
+    } while (abs(x - h) < epsilon)
     x
   }
   
