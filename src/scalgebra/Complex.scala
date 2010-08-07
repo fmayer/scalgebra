@@ -30,6 +30,7 @@ abstract class Complex(
   def pow(other: Double): Complex
   def root(other: Int): IndexedSeq[Complex]
   implicit def doubleToComplex(other: Double) = Complex.fromBinomial(other, 0)
+  def ==(other: Complex) = (a == other.a && b == other.b)
 }
 
 // Why are we doing this? Consider the case of two complex numbers being
@@ -58,7 +59,7 @@ trait ComplexBinomial extends Complex {
     Complex.fromBinomial(a / other, b / other)
 
   override def /(other: Complex) = {
-    val divisor = math.pow(other.a, 2) + math.pow(other.b, 2)
+    val divisor = a * a + b * b
     Complex.fromBinomial(
       (a * other.a + b * other.b) / divisor,
       (b * other.a - a * other.b) / divisor
@@ -70,10 +71,7 @@ trait ComplexBinomial extends Complex {
 trait AbstractComplexBinomial extends ComplexBinomial {
   abstract override def pow(other: Double): Complex = {
     other match {
-      case 2.0 => Complex.fromBinomial(
-          math.pow(a, 2) + math.pow(b, 2),
-          a * b
-        )
+      case 2.0 => Complex.fromBinomial(a * a + b * b, a * b)
       case n => super.pow(other);
     }
   }
