@@ -16,6 +16,7 @@ object Complex {
       a, b, math.sqrt(math.pow(a, 2) + math.pow(b, 2)), math.tanh(b / a)
     ) with ComplexPolar with AbstractComplexBinomial
   }
+  implicit def doubleToComplex(other: Double) = Complex.fromBinomial(other, 0)
 }
 
 abstract class Complex(
@@ -29,7 +30,6 @@ abstract class Complex(
   def /(other: Double): Complex
   def pow(other: Double): Complex
   def root(other: Int): IndexedSeq[Complex]
-  implicit def doubleToComplex(other: Double) = Complex.fromBinomial(other, 0)
   def ==(other: Complex) = (a == other.a && b == other.b)
 }
 

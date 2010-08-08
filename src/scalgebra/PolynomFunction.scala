@@ -4,16 +4,22 @@
 
 package scalgebra
 
+import scalgebra.Complex._
+
 import scala.collection.Seq
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.HashSet
 
 
 class PolynomFunction(var fun: Seq[(Double, Double)]) {
   fun = fun.sortBy(-_._2).filter(_._1 != 0)
   val mp = fun.map(x => (x._2, x._1)).toMap
 
-  def getn(n: Double) = mp(n)
+  def pow(x: Double, n: Double) = math.pow(x, n)
+  def pow(x: Complex, n: Double) = x.pow(n)
+
+  def getn(n: Double) = if (mp.contains(n)) mp(n) else 0.
 
   def order =
     fun(0)._2
@@ -41,8 +47,11 @@ class PolynomFunction(var fun: Seq[(Double, Double)]) {
     new PolynomFunction(newfun);
   }
   
-  def value(x: Double) = 
-    fun.map(a => a._1 * math.pow(x, a._2)).reduceLeft(_ + _)
+  def value(x: Complex): Complex =
+    fun.map(a => x.pow(a._2) * a._1).reduceLeft(_ + _)
+
+  def value(x: Double): Double =
+    fun.map(a => math.pow(x, a._2) * a._1).reduceLeft(_ + _)
 
   def roots(f: PolynomFunction) {
 
@@ -95,16 +104,59 @@ class PolynomFunction(var fun: Seq[(Double, Double)]) {
     }
   }
 
-  def newton(start: Double, epsilon: Double) {
-    val d = derivative;
-    var h = 0.;
-    var x = start;
-    var a: Double = 0.;
+  def newton(start: Complex, epsilon: Complex) {
+    var x = start
+    var nx = Complex.fromBinomial(0, 0)
+
+    var s = new HashSet[Complex]
+
     do {
-      h = x;
-      x = x - value(x) / d.value(x);
-    } while (abs(x - h) < epsilon)
-    x
+      nx = x
+      x = x - value(x) / derivative.value(x);
+      if (s.contains(x) || x == Double.NegativeInfinity) {
+        return None
+      }
+    } while (abs(nx.a - x.a) > epsilon.a || abs(nx.b - x.b) > epsilon.b);
+    Some(x)
+  }
+
+  def newton(start: Double, epsilon: Double): Option[Double] = {
+    var x = start
+    var nx = 0.;
+    
+    var s = new HashSet[Double]
+
+    do {
+      nx = x
+      x = x - value(x) / derivative.value(x);
+      if (s.contains(x) || x == Double.NegativeInfinity) {
+        return None
+      }
+    } while (abs(nx - x) > epsilon);
+    Some(x)
+  }
+
+  def solveLin() = -getn(0) / getn(1)
+  
+  def solveQuad() = {
+    val rt = getn(1) * getn(1) - 4 * getn(2) * getn(0);
+    if (rt > 0) {
+      List(
+        -getn(1) + math.sqrt(rt) / (2 * getn(2)),
+        -getn(1) - math.sqrt(rt) / (2 * getn(2))
+      )
+    } else {
+      List(
+        Complex.fromBinomial(
+          -getn(1) / (2 * getn(2)),
+          math.abs(rt) / (2 * getn(2))
+        ),
+        Complex.fromBinomial(
+          -getn(1) / (2 * getn(2)),
+          -math.abs(rt) / (2 * getn(2))
+        )
+      )
+    }
   }
   
   def isEmpty = fun.isEmpty
