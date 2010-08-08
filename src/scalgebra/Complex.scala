@@ -4,7 +4,18 @@
 
 package scalgebra
 
+object ComplexPrelude {
+  implicit def doubleToComplex(other: Double) = Complex.fromBinomial(other, 0)
+  implicit def intToComplex(other: Int) = Complex.fromBinomial(other, 0)
+}
+
+object ComplexGlobals {
+  val i = Complex.fromBinomial(0, 1)
+}
+
 object Complex {
+  def apply(a: Double, b: Double) = fromBinomial(a, b)
+
   def fromPolar(r: Double, phi: Double): Complex = {
     new Complex(
       r * math.cos(phi), r * math.sin(phi), r, phi % math.Pi
@@ -16,7 +27,6 @@ object Complex {
       a, b, math.sqrt(math.pow(a, 2) + math.pow(b, 2)), math.tanh(b / a)
     ) with ComplexPolar with AbstractComplexBinomial
   }
-  implicit def doubleToComplex(other: Double) = Complex.fromBinomial(other, 0)
 }
 
 abstract class Complex(
